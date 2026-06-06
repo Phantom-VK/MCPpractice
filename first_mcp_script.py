@@ -1,11 +1,14 @@
 import asyncio
 import os
 
-from agents import Agent, Runner, trace, OpenAIChatCompletionsModel
+from agents.agent import Agent
 from agents.mcp import MCPServerStdio
+from agents.run import Runner
 from dotenv import load_dotenv
 from mcp.shared.exceptions import McpError
 from openai import AsyncOpenAI
+
+from llm.deepseek_client import deepseek_model
 
 load_dotenv()
 
@@ -60,13 +63,6 @@ async def run_agent_with_mcp():
 
     async with MCPServerStdio(params=files_params, client_session_timeout_seconds=60) as sandbox_server:
         async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=30) as playwright_server:
-            deepseek_model = OpenAIChatCompletionsModel(
-                    model="deepseek-v4-pro",
-                    openai_client= AsyncOpenAI(
-                        api_key=os.environ.get("DEEPSEEK_API_KEY"),
-                        base_url="https://api.deepseek.com/v1"
-                    )
-                )
             agent = Agent(
                         name="Pro DeepSeek Agent",
                         instructions=prompt,
